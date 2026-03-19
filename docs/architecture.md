@@ -1,149 +1,29 @@
-# aura-stream-next
+# Architecture
 
-## Overview
+## System Overview
 
 - Repository: `aura-stream-next`
-- Category: `frontend`
 - Runtime: `Node.js`
 - Primary framework: `Next.js`
 - Rendering or execution model: `App Router style filesystem routing`
-- Package manager metadata: `pnpm@10.10.0`
-- Root directories discovered: `5`
-- Root files discovered: `14`
-- Declared runtime dependencies: `19`
-- Declared development dependencies: `17`
-- Declared scripts: `7`
+- The structure below is based on source folders, configuration files, and declared package
+  metadata.
+- If a relationship is not explicit in code or config, it is left as unknown instead of inferred.
 
-## Repository Summary
+## Architecture Entry Points
 
-- `aura-stream-next` is documented from the files present in this repository only.
-- This README intentionally avoids assumptions when implementation details are not explicit.
-- Paths, dependencies, scripts, and configuration notes below are derived from the current
-  repository tree.
-- Unknown or partially confirmed areas are called out explicitly instead of being filled with
-  guesses.
-
-## Script Reference
-
-- `clean`: `rimraf node_modules .next pnpm-lock.yaml`
-- `dev`: `next dev --turbopack`
-- `generate`: `prisma generate`
-- `build`: `pnpm run generate && next build`
-- `start`: `next start`
-- `lint`: `next lint`
-- `format`: `prettier --write .`
-
-## Top-Level Directories
-
-- `.vscode/`
-- `docs/`
-- `prisma/`
-- `public/`
-- `src/`
-
-## Top-Level Files
-
-- `.gitignore`
-- `.prettierrc`
-- `DOCS.md`
-- `README.md`
-- `eslint.config.mjs`
-- `middelware.ts`
-- `next-env.d.ts`
+- `src/app/page.tsx`
 - `next.config.ts`
-- `package.json`
-- `parse-tsprune.ts`
-- `pnpm-lock.yaml`
-- `pnpm-workspace.yaml`
-- `postcss.config.mjs`
-- `tsconfig.json`
 
-## Runtime Dependencies
+## Directory Responsibility Map
 
-- `@hookform/resolvers`
-- `@prisma/client`
-- `@supabase/supabase-js`
-- `@tanstack/react-query`
-- `@tanstack/react-query-devtools`
-- `axios`
-- `bcryptjs`
-- `class-variance-authority`
-- `clsx`
-- `lucide-react`
-- `next`
-- `react`
-- `react-dom`
-- `react-hook-form`
-- `sonner`
-- `tailwind-merge`
-- `tw-animate-css`
-- `zod`
-- `zustand`
+- `.vscode/`: top-level directory present in the repository
+- `docs/`: top-level directory present in the repository
+- `prisma/`: top-level directory present in the repository
+- `public/`: top-level directory present in the repository
+- `src/`: top-level directory present in the repository
 
-## Development Dependencies
-
-- `@eslint/eslintrc`
-- `@tailwindcss/postcss`
-- `@types/node`
-- `@types/react`
-- `@types/react-dom`
-- `autoprefixer`
-- `eslint`
-- `eslint-config-next`
-- `eslint-plugin-react`
-- `postcss`
-- `prettier`
-- `prisma`
-- `rimraf`
-- `tailwindcss`
-- `ts-prune`
-- `tsx`
-- `typescript`
-
-## Environment Variable References
-
-- `API_KEY`
-- `FACEBOOK_CLIENT_ID`
-- `FACEBOOK_CLIENT_SECRET`
-- `FACEBOOK_REDIRECT_URI`
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
-- `GOOGLE_REDIRECT_URI`
-- `IMDB_ACCESS_TOKEN`
-- `NEXT_PUBLIC_API_BASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NODE_ENV`
-- `TMDB_ACCESS_TOKEN`
-- `TMDB_API_KEY`
-
-## Integration Notes
-
-- Prisma client dependencies are declared
-- Prisma tooling is present
-- Axios is declared for HTTP calls
-- bcryptjs is declared for password hashing
-- Supabase client is declared
-- Zod validation is declared
-- TanStack Query is declared
-- Zustand is declared
-
-## Authentication Notes
-
-- Password hashing dependency bcryptjs is present
-- Repository contains auth-related source files or routes
-
-## Database And Storage Notes
-
-- Prisma-backed database access is present
-
-## Primary Source Areas
-
-- `src/` is present
-- `prisma/` is present
-- `public/` is present
-
-## Route And Entry Inventory
+## Routing, Page, Or Endpoint Layer
 
 - `src/app/(auth)/login/page.tsx`
 - `src/app/(auth)/register/page.tsx`
@@ -193,7 +73,7 @@
 - `src/app/api/search/route.ts`
 - `src/app/api/tables/route.ts`
 
-## Service And Data Inventory
+## Service, Data, Or Runtime Layer
 
 - `src/lib/api.ts`
 - `src/lib/auth.ts`
@@ -206,18 +86,7 @@
 - `src/lib/tmdb.ts`
 - `src/lib/toast.ts`
 
-## State, Hook, Or Provider Inventory
-
-- `src/hooks/useCollectionActions.ts`
-- `src/hooks/useDebounce.ts`
-- `src/hooks/useIsMobile.ts`
-- `src/hooks/useLocalStorage.ts`
-- `src/hooks/usePagination.ts`
-- `src/hooks/useSlider.ts`
-- `src/hooks/useVolumeControl.ts`
-- `src/providers/PaginationProvider.tsx`
-
-## UI, Module, Or Feature Inventory
+## UI, Module, Or Presentation Layer
 
 - `src/components/auth/AuthGuard.tsx`
 - `src/components/auth/ProtectedRoute.tsx`
@@ -305,7 +174,7 @@
 - `src/features/lists/liked-list/LikedListStats.tsx`
 - `src/features/watchlist/partials.tsx`
 
-## Config, Schema, And Tooling Inventory
+## Configuration And Schema Layer
 
 - `eslint.config.mjs`
 - `next.config.ts`
@@ -319,29 +188,57 @@
 - `src/config/navlinks.ts`
 - `tsconfig.json`
 
-## Tests And Verification Inventory
+## State, Hook, Provider, Or Middleware Layer
 
-- No test files were categorized
+- `src/hooks/useCollectionActions.ts`
+- `src/hooks/useDebounce.ts`
+- `src/hooks/useIsMobile.ts`
+- `src/hooks/useLocalStorage.ts`
+- `src/hooks/usePagination.ts`
+- `src/hooks/useSlider.ts`
+- `src/hooks/useVolumeControl.ts`
+- `src/providers/PaginationProvider.tsx`
 
-## Development Workflow Notes
+## Data Flow Notes
 
-- Install path should be checked against package manager metadata before local development:
-  `pnpm@10.10.0`.
-- Build, dev, lint, format, and test tasks are listed exactly as declared in `package.json` when
-  present.
-- No dependency installation or build execution was performed for this documentation pass.
-- Script `dev` is available and may be relevant for local workflow review.
-- Script `build` is available and may be relevant for local workflow review.
-- Script `start` is available and may be relevant for local workflow review.
-- Script `lint` is available and may be relevant for local workflow review.
-- Script `format` is available and may be relevant for local workflow review.
+- The repository is organized around `Next.js` on top of `Node.js`.
+- The detected execution model is `App Router style filesystem routing`.
+- Routes, pages, endpoints, or entry files are listed explicitly in this document when they were
+  detected.
+- Service, library, database, or integration files are separated into their own inventory groups for
+  easier tracing.
+- Configuration, schema, and environment references are documented from source files and root config
+  files.
+- Detected route or endpoint files suggest where requests or page transitions begin.
+- Detected service or data files suggest where business logic or persistence concerns are
+  concentrated.
+- Detected state, provider, hook, or middleware files suggest cross-cutting runtime behavior.
 
-## Known Unknowns
+## External Integration Boundaries
 
-- Deployment platform configuration was not explicitly confirmed from a Render manifest
-- No dedicated test files were categorized from the scanned repository tree
+- Prisma client dependencies are declared
+- Prisma tooling is present
+- Axios is declared for HTTP calls
+- bcryptjs is declared for password hashing
+- Supabase client is declared
+- Zod validation is declared
+- TanStack Query is declared
+- Zustand is declared
 
-## Additional Source Inventory
+## Authentication And Access Notes
+
+- Password hashing dependency bcryptjs is present
+- Repository contains auth-related source files or routes
+
+## Database And Storage Notes
+
+- Prisma-backed database access is present
+
+## Deployment And Infrastructure Notes
+
+- Next.js configuration file is present
+
+## Architecture Support Inventory
 
 - `.prettierrc`
 - `eslint.config.mjs`
@@ -524,3 +421,8 @@
 - `src/utils/supabase.ts`
 - `src/utils/twUtil.ts`
 - `tsconfig.json`
+
+## Known Unknowns
+
+- Deployment platform configuration was not explicitly confirmed from a Render manifest
+- No dedicated test files were categorized from the scanned repository tree

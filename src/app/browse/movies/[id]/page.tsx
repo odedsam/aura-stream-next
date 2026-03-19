@@ -10,6 +10,8 @@ import {
 
 type Params = Promise<{ id: string }>;
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page(props: { params: Params }) {
   const params = await props.params;
   const id = params.id;

@@ -5,6 +5,35 @@ import bcrypt from 'bcryptjs';
 
 const SESSION_COOKIE = 'session_id';
 
+type AuthUserRecord = {
+  id: string;
+  email: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  avatarPath: string | null;
+};
+
+const splitName = (name: string) => {
+  const normalized = name.trim().replace(/\s+/g, ' ');
+  const [firstName = '', ...rest] = normalized.split(' ');
+
+  return {
+    firstName: firstName || null,
+    lastName: rest.length ? rest.join(' ') : null,
+  };
+};
+
+export const serializeUser = (user: AuthUserRecord) => ({
+  id: user.id,
+  email: user.email,
+  name:
+    [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+    user.username ||
+    user.email.split('@')[0],
+  avatar: user.avatarPath ?? undefined,
+});
+
 export const hashPassword = (password: string) => {
   return bcrypt.hash(password, 12);
 };
@@ -13,12 +42,16 @@ export const verifyPassword = (input: string, hash: string) => {
   return bcrypt.compare(input, hash);
 };
 
-export const createUser = async (email: string, password: string) => {
+export const createUser = async (email: string, password: string, name: string) => {
   const hashedPassword = await hashPassword(password);
+  const { firstName, lastName } = splitName(name);
+
   return prisma.user.create({
     data: {
       email,
       hashedPassword,
+      firstName,
+      lastName,
     },
   });
 };
@@ -62,7 +95,7 @@ export const getSessionUser = async () => {
 
   if (!session || session.expiresAt < new Date()) return null;
 
-  return session.user;
+  return serializeUser(session.user);
 };
 
 export const deleteSession = async () => {
@@ -70,7 +103,7 @@ export const deleteSession = async () => {
   const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
 
   if (sessionId) {
-    await prisma.session.delete({
+    await prisma.session.deleteMany({
       where: { id: sessionId },
     });
     cookieStore.delete(SESSION_COOKIE);

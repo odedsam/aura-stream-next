@@ -28,9 +28,6 @@ const nextConfig: NextConfig = {
   experimental: {},
   compress: true,
 
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   ...(process.env.NODE_ENV === 'production' && {
     poweredByHeader: false,
     generateEtags: false,

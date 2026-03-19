@@ -1,22 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/store/useAuth';
 import { AuraButton } from '@/components/ui/AuraButton';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from '@/lib/toast';
-import { ButtonFacebook, ButtonGoogle } from '@/components/ui/Buttons';
+import { ButtonGoogle } from '@/components/ui/Buttons';
 import Link from 'next/link';
-import { useDialogStore } from '@/app/store/useDialogStore';
-import MaintanceDialog from '@/components/feedback/Maintance';
 
 const registerSchema = z
   .object({
     name: z.string().min(2, 'Name is required'),
     email: z.string().email('Invalid email'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -29,30 +27,35 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const { register: registerUser, isLoading } = useAuth();
   const router = useRouter();
-  const { open } = useDialogStore();
-  const { register, handleSubmit, formState: { errors }, } = useForm<RegisterFormData>({ resolver: zodResolver(registerSchema),});
-
-
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({ resolver: zodResolver(registerSchema) });
 
   const onSubmit = async (data: RegisterFormData) => {
-    open();
-    return;
-    // try {
-    //   await registerUser(data.email, data.password, data.name);
-    //   toast.error('Sign-Up functionality will be temporarily unavailable for the next two days. We apologize for the inconvenience.');
+    setSubmitError(null);
 
-    //   // router.push('/dashboard');
-    // } catch (err) {
-    //   console.error(err);
-    // }
+    try {
+      await registerUser(data.email, data.password, data.name);
+      router.push('/dashboard');
+      router.refresh();
+    } catch (err) {
+      setSubmitError((err as Error).message || 'Sign up failed');
+    }
   };
 
   return (
     <div className="h-screen flex items-center my-20 justify-center bg-primary px-4 py-12">
-      <div className="w-full max-w-md space-y-8 content-block-gray rounded-none p-8  shadow-md ">
+      <div className="w-full max-w-md space-y-8 content-block-gray rounded-none p-8 shadow-md">
         <h2 className="text-center text-2xl aura-text tracking-widest">Create Account</h2>
 
-        <form className="space-y-6 " onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          {submitError && (
+            <p className="text-sm text-[var(--red-def)] mt-1 text-center">{submitError}</p>
+          )}
+
           <div className="space-y-2">
             <label htmlFor="name" className="block text-sm text-[var(--gray-65)] font-medium">
               Full Name
@@ -115,7 +118,7 @@ export default function RegisterPage() {
               id="confirmPassword"
               autoComplete="new-password"
               {...register('confirmPassword')}
-              className="w-full px-4 py-2 bg-[var(--clr-sec)] border border-[var(--black-25)]  text-white placeholder-[var(--gray-def)] focus:outline-none focus:ring-2 focus:ring-[var(--red-def)]"
+              className="w-full px-4 py-2 bg-[var(--clr-sec)] border border-[var(--black-25)] text-white placeholder-[var(--gray-def)] focus:outline-none focus:ring-2 focus:ring-[var(--red-def)]"
               placeholder="••••••••"
             />
             {errors.confirmPassword && (
@@ -127,14 +130,12 @@ export default function RegisterPage() {
             type="submit"
             variant="primary"
             className="w-full aura-text"
-            onClick={open}
             disabled={isLoading}>
             {isLoading ? 'Creating Account...' : 'Sign Up'}
           </AuraButton>
 
           <div className="flex flex-col gap-3 mt-4">
-            <ButtonFacebook onClick={open} />
-            <ButtonGoogle onClick={open} />
+            <ButtonGoogle />
           </div>
         </form>
 
@@ -145,9 +146,6 @@ export default function RegisterPage() {
           </Link>
         </p>
       </div>
-      <>
-        <MaintanceDialog />
-      </>
     </div>
   );
 }

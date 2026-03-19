@@ -9,6 +9,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-geist-sans: Arial, Helvetica, sans-serif;
+  --font-geist-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  --font-manrope: Arial, Helvetica, sans-serif;
 
   /* Black Shades */
   --clr-primary: #141414;

@@ -2,8 +2,11 @@ import { fetchPopularMovies, fetchPopularShows } from '@/lib/tmdb';
 import { BrowseSection } from '@/components/sections/BrowseSection';
 import HeroSliderServer from '@/components/common/HeroSliderServer';
 import CallToAction from '@/app/layouts/CallToAction';
+import BrowseSearchResults from '@/components/search/BrowseSearchResults';
 import Link from 'next/link';
 import Image from 'next/image';
+
+export const dynamic = 'force-dynamic';
 
 export default async function BrowsePage() {
   const [movies, shows] = await Promise.all([fetchPopularMovies(), fetchPopularShows()]);
@@ -12,6 +15,7 @@ export default async function BrowsePage() {
     <div className="w-full">
       <HeroSliderServer />
       <div className="p-6 space-y-10">
+        <BrowseSearchResults />
         <section className="w-full">
           <h2 className="text-2xl font-bold mb-4"></h2>
           <BrowseSection className="w-full" showCategory categoryName="Movies">

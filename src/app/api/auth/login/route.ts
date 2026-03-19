@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { findUserByEmail, verifyPassword, createSession } from '@/lib/auth';
+import { findUserByEmail, verifyPassword, createSession, serializeUser } from '@/lib/auth';
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
@@ -15,5 +15,5 @@ export async function POST(req: Request) {
   }
 
   await createSession(user.id);
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ user: serializeUser(user) });
 }

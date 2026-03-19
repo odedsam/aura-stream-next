@@ -4,6 +4,8 @@ import { fetchShowById, fetchShowTrailers, fetchShowCast, fetchShowSeasons } fro
 
 type Params = Promise<{ id: string }>;
 
+export const dynamic = 'force-dynamic';
+
 const fetchSeasonDetails = async (showId: string, seasonNumber: number) => {
   const res = await fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}`, {
     headers: {

@@ -4,11 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/store/useAuth';
 import { AuraButton } from '@/components/ui/AuraButton';
-import { ButtonFacebook, ButtonGoogle } from '@/components/ui/Buttons';
-import { toast } from '@/lib/toast';
-import { useDialogStore } from '@/app/store/useDialogStore';
+import { ButtonGoogle } from '@/components/ui/Buttons';
 import Link from 'next/link';
-import MaintanceDialog from '@/components/feedback/Maintance';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -16,34 +13,19 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { login, isLoading } = useAuth();
-  const {open,close} = useDialogStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    open();
-    return;
-    // try {
-    //   const res = await fetch('/api/auth/login', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ email, password }),
-    //   });
 
-    //   if (!res.ok) {
-    //     const data = await res.json();
-    //     setError(data.error || 'Invalid credentials. Please try again.');
-    //     return;
-    //   }
-
-    //   await login(email, password);
-    //   // router.push('/dashboard');
-    // } catch (err) {
-    //   setError('Something went wrong. Please try again.');
-    // }
+    try {
+      await login(email, password);
+      router.push('/dashboard');
+      router.refresh();
+    } catch (err) {
+      setError((err as Error).message || 'Something went wrong. Please try again.');
+    }
   };
-
-  // Lucide does not have a Google icon, so we use a colored Circle as a placeholder
 
   return (
     <div className="h-screen flex items-center justify-center bg-primary mt-8 px-4 py-12">
@@ -90,14 +72,12 @@ export default function LoginPage() {
             type="submit"
             variant="primary"
             className="w-full aura-text"
-            onClick={open}
             disabled={isLoading}>
             {isLoading ? 'Signing in...' : 'Sign In'}
           </AuraButton>
 
           <div className="flex flex-col gap-3 mt-4">
-            <ButtonFacebook onClick={open} />
-            <ButtonGoogle onClick={open} />
+            <ButtonGoogle />
           </div>
         </form>
 
@@ -108,12 +88,6 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
-      <>
-      <MaintanceDialog  />
-      </>
     </div>
-
   );
 }
-
-// toast.error('Login functionality will be temporarily unavailable for the next two days. We apologize for the inconvenience.');

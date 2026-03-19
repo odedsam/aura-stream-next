@@ -1,15 +1,19 @@
 import { CastMember } from '@/components/cards/CastCard';
-import { env } from '@/config/env';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
 
-if (!env.TMDB_API_KEY || !env.TMDB_ACCESS_TOKEN) {
-  throw new Error('Missing required TMDB API keys in environment variables');
-}
+const getTmdbAccessToken = () => {
+  const token = process.env.TMDB_ACCESS_TOKEN;
+  if (!token) {
+    throw new Error('Missing required TMDB access token in environment variables');
+  }
 
-const headers = {
-  Authorization: `Bearer ${env.TMDB_ACCESS_TOKEN}`,
+  return token;
 };
+
+const getHeaders = () => ({
+  Authorization: `Bearer ${getTmdbAccessToken()}`,
+});
 
 export type Movie = {
   release_date: string | undefined;
@@ -54,7 +58,7 @@ interface TmdbReview {
 
 export const fetchMovieReviews = async (id: string): Promise<TmdbReview[]> => {
   const res = await fetch(`${BASE_URL}/movie/${id}/reviews?language=en-US`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -69,7 +73,7 @@ export const fetchMovieReviews = async (id: string): Promise<TmdbReview[]> => {
 
 export const fetchPopularMovies = async (): Promise<Movie[]> => {
   const res = await fetch(`${BASE_URL}/movie/popular?language=en-US&page=1`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -81,7 +85,7 @@ export const fetchPopularMovies = async (): Promise<Movie[]> => {
 
 export const fetchPopularShows = async (): Promise<Movie[]> => {
   const res = await fetch(`${BASE_URL}/tv/popular?language=en-US&page=1`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -91,9 +95,27 @@ export const fetchPopularShows = async (): Promise<Movie[]> => {
   return data.results;
 };
 
+export const searchMedia = async (query: string): Promise<Movie[]> => {
+  const res = await fetch(
+    `${BASE_URL}/search/multi?query=${encodeURIComponent(query)}&include_adult=false`,
+    {
+      headers: getHeaders(),
+      next: { revalidate: 300 },
+    },
+  );
+
+  if (!res.ok) throw new Error(`Failed to search media for query: ${query}`);
+
+  const data = await res.json();
+
+  return (data.results || []).filter(
+    (item: any) => item.media_type === 'movie' || item.media_type === 'tv',
+  );
+};
+
 export const fetchMovieById = async (id: string): Promise<Movie> => {
   const res = await fetch(`${BASE_URL}/movie/${id}?language=en-US`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -104,9 +126,7 @@ export const fetchMovieById = async (id: string): Promise<Movie> => {
 
 export async function fetchMovieCredits(id: string) {
   const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/credits`, {
-    headers: {
-      Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
-    },
+    headers: getHeaders(),
     next: { revalidate: 60 * 60 * 6 },
   });
 
@@ -116,7 +136,7 @@ export async function fetchMovieCredits(id: string) {
 }
 export const fetchMovieCast = async (id: string): Promise<CastMember[]> => {
   const res = await fetch(`${BASE_URL}/movie/${id}/credits?language=en-US`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -131,7 +151,7 @@ export const fetchMovieCast = async (id: string): Promise<CastMember[]> => {
 
 export const fetchMovieTrailers = async (movieId: string): Promise<Trailer[]> => {
   const res = await fetch(`${BASE_URL}/movie/${movieId}/videos?language=en-US`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -151,7 +171,7 @@ export const fetchMovieTrailers = async (movieId: string): Promise<Trailer[]> =>
 
 export const fetchShowById = async (id: string): Promise<Movie> => {
   const res = await fetch(`${BASE_URL}/tv/${id}?language=en-US`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -162,7 +182,7 @@ export const fetchShowById = async (id: string): Promise<Movie> => {
 
 export const fetchShowTrailers = async (showId: string): Promise<Trailer[]> => {
   const res = await fetch(`${BASE_URL}/tv/${showId}/videos?language=en-US`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -176,7 +196,7 @@ export const fetchShowTrailers = async (showId: string): Promise<Trailer[]> => {
 
 export const fetchShowCast = async (id: string): Promise<CastMember[]> => {
   const res = await fetch(`${BASE_URL}/tv/${id}/credits`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -188,7 +208,7 @@ export const fetchShowCast = async (id: string): Promise<CastMember[]> => {
 
 export const fetchShowSeasons = async (showId: string): Promise<any[]> => {
   const res = await fetch(`${BASE_URL}/tv/${showId}?language=en-US`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
@@ -200,7 +220,7 @@ export const fetchShowSeasons = async (showId: string): Promise<any[]> => {
 
 export const fetchSeasonDetails = async (showId: string, seasonNumber: number): Promise<any> => {
   const res = await fetch(`${BASE_URL}/tv/${showId}/season/${seasonNumber}?language=en-US`, {
-    headers,
+    headers: getHeaders(),
     next: { revalidate: 3600 },
   });
 
